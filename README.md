@@ -10,12 +10,13 @@ Wörter-Ratespiel für zwei Teams: ein Spielfeld (PC, Beamer oder Tablet) und ei
 | `manifest.webmanifest` | Name, Farben und Icon für «Zum Home-Bildschirm» |
 | `sw.js` | Macht die App offline-fähig |
 | `icons/` | App-Icons (192, 512, Apple 180) und Favicon |
+| `fonts/` | Schriften (lokal, keine Verbindung zu Google) |
 | `vercel.json` | Sorgt dafür, dass Updates sofort ankommen |
 
 ## Auf GitHub und Vercel bringen
 
 1. Auf GitHub ein neues Repository anlegen, z. B. `geheimakte`.
-2. Alle Dateien aus diesem Ordner hochladen (Add file → Upload files), den Ordner `icons` mitsamt Inhalt.
+2. Alle Dateien aus diesem Ordner hochladen (Add file → Upload files), die Ordner `icons` und `fonts` mitsamt Inhalt. Wichtig: den Inhalt hochladen, nicht den Ordner `geheimakte` selbst.
 3. In Vercel: Add New → Project → das Repository importieren.
 4. Framework Preset: **Other**. Build Command und Output Directory leer lassen. Deploy.
 
@@ -30,7 +31,7 @@ Fertig. Jede Änderung, die du auf GitHub hochlädst, geht automatisch online.
 ## Update veröffentlichen
 
 1. Neue `index.html` auf GitHub hochladen.
-2. In `sw.js` die Versionsnummer hochzählen (`geheimakte-v2` → `geheimakte-v3`). Sonst zeigen installierte Apps eventuell noch eine Weile die alte Version.
+2. In `sw.js` die Versionsnummer hochzählen (`geheimakte-v3` → `geheimakte-v4`). Sonst zeigen installierte Apps eventuell noch eine Weile die alte Version.
 
 ## Wichtig
 

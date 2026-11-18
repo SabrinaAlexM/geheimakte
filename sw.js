@@ -1,7 +1,7 @@
 // Geheimakte Service Worker: macht die App offline-fähig.
 // Bei jeder neuen Version die Zahl hochzählen, damit alle Geräte das Update laden.
-const VERSION = 'geheimakte-v2';
-const APP = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon.svg'];
+const VERSION = 'geheimakte-v3';
+const APP = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon.svg', './fonts/special-elite-400.woff2', './fonts/ibm-plex-mono-400.woff2', './fonts/ibm-plex-mono-500.woff2', './fonts/ibm-plex-mono-600.woff2', './fonts/ibm-plex-mono-700.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP)).then(() => self.skipWaiting()));
