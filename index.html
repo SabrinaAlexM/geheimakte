@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Geheimakte: das Wörter-Ratespiel für zwei Teams, mit Spielfeld und Hinweis-Karte fürs Handy.">
+<meta name="theme-color" content="#15120f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Geheimakte">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Geheimakte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root, body{
+  --bg:#15120f; --surface:#241e18; --surface2:#2e261f; --text:#efe4cc; --muted:#a8987a; --line:#3a3027;
+  --card:#e9dcc0; --card-text:#2a221a; --card-line:#c9b894;
+  --red:#b3392c; --blue:#2e5d88; --neutral:#a4957a; --assassin:#0a0a0a;
+  --on-color:#f6eedd; --on-neutral:#2a221a;
+  --head:'Special Elite','IBM Plex Mono',monospace; --body:'IBM Plex Mono',monospace; --cardfont:'IBM Plex Mono',monospace;
+  --radius:4px; --shadow:0 2px 0 rgba(0,0,0,.5),0 6px 14px rgba(0,0,0,.35);
+  --btn:#e9dcc0; --btn-text:#1d1813; --accent:#c8a45a;
+}
+body.light{
+  --bg:#ebe1cb; --surface:#f6efdf; --surface2:#efe5cf; --text:#2a221a; --muted:#7a6a52; --line:#d6c6a3;
+  --card:#fbf7ec; --card-text:#2a221a; --card-line:#e2d5b8;
+  --red:#a8352a; --blue:#2a5680; --neutral:#bcaa86; --assassin:#151210;
+  --on-color:#f8f1e2; --on-neutral:#2a221a;
+  --shadow:0 1px 0 rgba(60,40,20,.25),0 5px 12px rgba(60,40,20,.15);
+  --btn:#2a221a; --btn-text:#f4ecda; --accent:#a87a24;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(ellipse at top,#2a221b 0%,#15120f 60%) fixed;color:var(--text);font-family:var(--body);-webkit-tap-highlight-color:transparent}
+body.light{background:radial-gradient(ellipse at top,#f7f0df 0%,#e6dbc3 70%) fixed}
+button{font-family:inherit;cursor:pointer;color:inherit}
+input,textarea{font-family:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);font-weight:400}
+
+.lstamp{font-family:var(--head);border:2.5px solid var(--red);color:var(--red);padding:1px 9px;transform:rotate(-4deg);display:inline-block;text-transform:uppercase;letter-spacing:.08em;line-height:1.15}
+.brand .lstamp{font-size:18px}
+.chip{white-space:nowrap}
+@media(max-width:480px){.hm{display:none}.brand .lstamp{font-size:15px}.brand svg{width:30px;height:30px}}
+.hero h1.logo{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:inherit}
+.hero .lav{width:clamp(80px,18vw,120px);height:clamp(80px,18vw,120px);display:block}
+.hero .lav svg{width:100%;height:100%;display:block}
+.hero .lstamp{font-size:clamp(34px,8vw,64px);border-width:4px;padding:2px 16px}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}
+.topbar{padding-top:max(10px,env(safe-area-inset-top))}
+/* top */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px}
+.brand{font-family:var(--head);font-size:21px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:10px;background:none;border:0;padding:0}
+.brand svg{width:34px;height:34px}
+.topright{display:flex;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:14px}
+
+/* buttons */
+.btn{border:0;background:var(--btn);color:var(--btn-text);padding:10px 15px;border-radius:var(--radius);font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.red{background:var(--red);color:var(--on-color)} .btn.blue{background:var(--blue);color:var(--on-color)}
+.btn.big{padding:14px 22px;font-size:17px}
+.btn:disabled{opacity:.4;cursor:default}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:calc(var(--radius) + 3px);padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{flex:1;border:0;background:transparent;padding:9px 10px;border-radius:var(--radius);font-size:14px;min-width:70px}
+.seg button.on{background:var(--btn);color:var(--btn-text);font-weight:700}
+.seg button.on.red{background:var(--red);color:var(--on-color)} .seg button.on.blue{background:var(--blue);color:var(--on-color)}
+
+/* home */
+.page{max-width:780px;margin:0 auto;padding:10px 18px 60px}
+.hero{text-align:center;padding:26px 0 18px}
+.hero h1{font-size:clamp(42px,9vw,76px);margin:0;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.hero p{color:var(--muted);font-size:17px;margin:14px auto 0;max-width:470px;line-height:1.45}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+@media(max-width:640px){.choices{grid-template-columns:1fr}}
+.choice{background:var(--card);color:var(--card-text);border:0;border-radius:var(--radius);padding:18px;text-align:left;box-shadow:var(--shadow);position:relative}
+.choice::after{content:"";position:absolute;top:0;right:18px;width:42px;height:10px;background:rgba(0,0,0,.08);border-radius:0 0 4px 4px}
+.choice .ic{font-size:28px}
+.choice h3{margin:8px 0 6px;font-size:20px}
+.choice p{margin:0;opacity:.75;line-height:1.4;font-size:14px}
+.resume{margin-top:14px;text-align:center}
+.loadrow{margin-top:16px;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:14px}
+input.code{font-family:var(--head);text-transform:uppercase;letter-spacing:.15em;font-size:18px;width:150px;text-align:center;padding:9px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text)}
+
+/* setup */
+.sect{background:var(--surface);border:1px solid var(--line);border-radius:calc(var(--radius) + 4px);padding:16px;margin-top:14px}
+.sect h2{margin:0 0 4px;font-size:20px;display:flex;align-items:center;gap:8px}
+.sect .sub{color:var(--muted);font-size:14px;margin:0 0 12px;line-height:1.4}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.teams{grid-template-columns:1fr}}
+.teambox{border-radius:var(--radius);padding:12px;border-top:6px solid var(--k);background:var(--surface2)}
+.teambox.red{--k:var(--red)} .teambox.blue{--k:var(--blue)}
+.teamtop{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.avbtn{width:64px;height:64px;border-radius:50%;border:3px solid var(--k);padding:0;background:none;flex:none;position:relative}
+.avbtn svg{width:100%;height:100%;display:block}
+.avbtn::after{content:"✎";position:absolute;right:-4px;bottom:-4px;background:var(--k);color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;line-height:22px;text-align:center}
+.field{width:100%;padding:9px 11px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:15px}
+.field + .field{margin-top:7px}
+.pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pword{border:1px dashed var(--card-line);background:var(--card);color:var(--card-text);border-radius:var(--radius);padding:10px 4px;font-family:var(--cardfont);font-weight:600;text-transform:uppercase;font-size:13px;position:relative;overflow:hidden}
+.pword .word{display:block;white-space:nowrap;overflow:hidden}
+.pword::after{content:"↻";position:absolute;top:1px;right:4px;font-size:11px;opacity:.45}
+.pword.new{animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(.85);background:var(--accent)}100%{transform:scale(1)}}
+.setupfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px}
+.codeshow{font-family:var(--head);font-size:22px;letter-spacing:.12em}
+.codeshow small{display:block;font-family:var(--body);font-size:12px;letter-spacing:0;color:var(--muted)}
+
+/* board */
+.boardwrap{padding:0 14px 20px;display:flex;flex-direction:column;align-items:center}
+.status{width:100%;max-width:1200px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pill{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;font-weight:700;font-size:15px;color:var(--on-color);position:relative}
+.pill.red{background:var(--red)} .pill.blue{background:var(--blue)}
+.pill .av{width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--card)}
+.pill .av svg{width:100%;height:100%;display:block}
+.pill .n{font-size:21px;font-family:var(--head)}
+.pill .nm{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill.active{outline:3px solid var(--accent);outline-offset:2px}
+.pill .shades{position:absolute;top:-9px;left:6px;width:26px}
+.turn{flex:1;min-width:170px;font-family:var(--head);font-size:19px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.turn .who{padding:3px 10px;border-radius:var(--radius);color:var(--on-color)}
+.who.red{background:var(--red)} .who.blue{background:var(--blue)}
+.codebadge{font-family:var(--head);letter-spacing:.12em;border:1px dashed var(--muted);background:transparent;padding:6px 10px;border-radius:var(--radius);font-size:15px}
+.timer{display:flex;align-items:center;gap:4px}
+.timer .t{font-family:var(--head);font-size:24px;min-width:92px;padding:4px 12px;border-radius:var(--radius);border:2px solid var(--accent);background:transparent;color:var(--text)}
+.timer .t.run{background:var(--accent);color:#1a1510}
+.timer .t.low{border-color:var(--red);color:var(--red);animation:blink 1s infinite}
+.timer .t.run.low{background:var(--red);color:#fff}
+.timer .t.out{background:var(--red);color:#fff;border-color:var(--red)}
+@keyframes blink{50%{opacity:.6}}
+.timer .r{border:0;background:none;font-size:20px;color:var(--muted);padding:4px}
+.cluebar{width:100%;max-width:1200px;margin-bottom:10px}
+.cluebar input{width:100%;font-family:var(--head);font-size:17px;padding:9px 12px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--text);letter-spacing:.04em}
+.actions{width:100%;max-width:1200px;display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+.peekbanner{background:var(--accent);color:#1a1a1a;font-weight:700;padding:4px 10px;border-radius:var(--radius);font-size:13px;font-family:var(--body)}
+
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(5px,1vw,12px);width:min(100%,1200px,calc((100dvh - 250px) * 1.45))}
+.card{position:relative;aspect-ratio:5/3.3;border:0;padding:0 6px;background:var(--card);color:var(--card-text);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--cardfont);font-weight:600;transition:transform .12s,background .3s;overflow:hidden}
+@media (max-aspect-ratio:1/1){.card{aspect-ratio:1/1.05}}
+.card:active{transform:scale(.97)}
+.word{display:block;width:100%;text-align:center;white-space:nowrap;overflow:hidden;letter-spacing:.06em;text-transform:uppercase;line-height:1.15}
+.card .word{font-size:clamp(10px,1.9vw,24px)}
+.word.wrap{white-space:normal;overflow-wrap:anywhere;hyphens:auto}
+.card::before{content:"";position:absolute;left:10%;right:10%;bottom:22%;border-bottom:1px solid var(--card-line)}
+.glyph{position:absolute;top:4px;right:6px;font-size:11px;opacity:0;line-height:1}
+.grid.tablet .card{justify-content:space-between;padding:7% 6px}
+.grid.tablet .card::before{bottom:50%}
+.grid.tablet .card .word{font-size:clamp(9px,1.5vw,20px)}
+.grid.tablet .card .word.flipw{transform:rotate(180deg);opacity:.85}
+.card.rev{box-shadow:none}
+.card.rev.c-red{background:var(--red);color:var(--on-color)}
+.card.rev.c-blue{background:var(--blue);color:var(--on-color)}
+.card.rev.c-neutral{background:var(--neutral);color:var(--on-neutral)}
+.card.rev.c-assassin{background:var(--assassin);color:#fff}
+.card.rev .word{opacity:.6}
+.card.rev .glyph{opacity:.9}
+.card.rev::before{display:none}
+.card.flip{animation:flip .45s ease}
+@keyframes flip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+.c-red{--k:var(--red)} .c-blue{--k:var(--blue)} .c-neutral{--k:var(--neutral)} .c-assassin{--k:#555}
+.grid.peek .card:not(.rev),.grid.done .card:not(.rev){box-shadow:inset 0 0 0 4px var(--k),var(--shadow)}
+.grid.peek .card:not(.rev) .glyph,.grid.done .card:not(.rev) .glyph{opacity:1;color:var(--k)}
+.grid.peek .card.c-assassin:not(.rev),.grid.done .card.c-assassin:not(.rev){background:#3b3b3b;color:#fff}
+.grid.peek .card.c-red:not(.rev){background:color-mix(in srgb,var(--red) 22%,var(--card))}
+.grid.peek .card.c-blue:not(.rev){background:color-mix(in srgb,var(--blue) 22%,var(--card))}
+.grid.peek .card.c-neutral:not(.rev){background:color-mix(in srgb,var(--neutral) 35%,var(--card))}
+
+/* spy */
+.spy{max-width:640px;margin:0 auto;padding:4px 12px 40px}
+.spyhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.spyhead h2{margin:0;font-size:20px}
+.startline{display:flex;align-items:center;gap:8px;font-size:15px;margin:2px 0 10px}
+.startline svg{width:30px}
+.startline b{padding:2px 8px;border-radius:var(--radius);color:var(--on-color)}
+.ctrl{display:grid;gap:8px;margin-bottom:10px}
+.keywrap{border:6px solid var(--k);border-radius:calc(var(--radius) + 6px);padding:6px;background:var(--surface)}
+.keywrap.red{--k:var(--red)} .keywrap.blue{--k:var(--blue)}
+.keygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.key{aspect-ratio:1/1;border:0;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 3px;color:var(--on-color);font-family:var(--cardfont);font-weight:600;position:relative;overflow:hidden;transition:opacity .2s,filter .2s}
+.key.c-red{background:var(--red)} .key.c-blue{background:var(--blue)} .key.c-neutral{background:var(--neutral);color:var(--on-neutral)} .key.c-assassin{background:var(--assassin);color:#fff}
+.key .word{font-size:12px}
+.key .glyph{opacity:.9;position:static;font-size:13px;margin-bottom:3px}
+.key.dim{opacity:.22;filter:grayscale(.9)}
+.key.c-assassin.dim{opacity:.75;filter:none}
+.key.marked{opacity:.25}
+.key.marked::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:2px solid currentColor;transform:rotate(-20deg)}
+.key.sel{outline:4px solid var(--accent);outline-offset:-4px;transform:scale(.95)}
+.key .cnum{position:absolute;bottom:2px;right:3px;font-size:9px;background:var(--accent);color:#1a1510;border-radius:3px;padding:0 3px;font-family:var(--body);font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:calc(var(--radius) + 4px);padding:12px;margin-top:12px}
+.panel h3{margin:0 0 8px;font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.wchip{font-family:var(--cardfont);font-weight:600;text-transform:uppercase;font-size:12px;padding:4px 8px;border-radius:var(--radius);color:var(--on-color);letter-spacing:.04em}
+.wchip.c-neutral{color:var(--on-neutral)}
+.wchip.c-red{background:var(--red)} .wchip.c-blue{background:var(--blue)} .wchip.c-neutral{background:var(--neutral)} .wchip.c-assassin{background:var(--assassin)}
+.wchip.done{text-decoration:line-through;opacity:.5}
+.warn{color:var(--red);font-weight:700;font-size:14px;margin-top:8px}
+.row{display:flex;gap:8px;align-items:center}
+.combo{display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-top:1px dashed var(--line)}
+.combo:first-of-type{border-top:0}
+.combo .cl{font-family:var(--head);font-size:18px;min-width:80px}
+.combo .cl small{font-family:var(--body);font-size:13px;color:var(--muted)}
+.combo .bd{flex:1}
+.combo.used{opacity:.45}
+.combo.used .cl{text-decoration:line-through}
+.mini{border:1px solid var(--line);background:transparent;border-radius:var(--radius);padding:5px 8px;font-size:13px}
+textarea.field{min-height:90px;resize:vertical;line-height:1.4}
+.legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.4}
+.enter{max-width:420px;margin:40px auto;text-align:center;padding:0 18px}
+.enter h2{font-size:26px}
+.enter input.code{width:220px;font-size:26px;padding:12px}
+.err{color:var(--red);min-height:22px;margin-top:8px;font-size:14px}
+
+/* help */
+.help{line-height:1.55}
+.help h2{font-size:22px;margin:26px 0 6px}
+.help p,.help li{font-size:16px}
+.help .tip{background:var(--surface);border-left:4px solid var(--accent);padding:10px 14px;border-radius:var(--radius)}
+
+
+/* ---------- Tour ---------- */
+.tour{max-width:820px;margin:0 auto;padding:6px 16px 40px}
+.tourtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 12px}
+.tourtop h1{margin:0;font-size:26px}
+.tcount{font-size:14px;color:var(--muted)}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:calc(var(--radius) + 6px);overflow:hidden}
+.tvis{min-height:290px;display:flex;align-items:center;justify-content:center;gap:18px;padding:22px 16px;flex-wrap:wrap;background:repeating-linear-gradient(45deg,transparent 0 12px,rgba(255,255,255,.015) 12px 24px),var(--surface2);position:relative}
+body.light .tvis{background:repeating-linear-gradient(45deg,transparent 0 12px,rgba(0,0,0,.025) 12px 24px),var(--surface2)}
+.ttext{padding:18px 20px 20px}
+.ttext h2{margin:0 0 8px;font-size:23px}
+.ttext p{margin:0 0 10px;line-height:1.5;font-size:16px}
+.ttext ol.nums{padding-left:0;list-style:none;margin:0 0 10px}
+.ttext ol.nums li{display:flex;gap:8px;align-items:flex-start;margin:6px 0;line-height:1.4}
+.tip{background:color-mix(in srgb,var(--accent) 14%,transparent);border-left:4px solid var(--accent);padding:10px 14px;border-radius:var(--radius);font-size:15px;line-height:1.45;margin-top:4px}
+.tip b:first-child{font-family:var(--head);font-weight:400}
+.tnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;flex:1}
+.dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:var(--line)}
+.dots button.on{background:var(--accent);transform:scale(1.3)}
+.tvis.anim > *{animation:tin .35s ease}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.nb{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:none;border-radius:50%;background:var(--accent);color:#1a1510;font-family:var(--body);font-weight:700;font-size:13px;box-shadow:0 0 0 2px var(--surface2)}
+/* devices */
+.screen{background:var(--bg);border:9px solid #2b2621;border-radius:10px;padding:8px;width:min(100%,430px);box-shadow:0 10px 30px rgba(0,0,0,.35);position:relative}
+.screen.small{width:230px}
+.laptop{display:flex;flex-direction:column;align-items:center}
+.laptop .base{width:110%;height:12px;background:#3a332c;border-radius:0 0 12px 12px;margin-top:-2px}
+.phone{width:190px;background:var(--bg);border:8px solid #15120f;border-radius:26px;padding:12px 8px 10px;box-shadow:0 10px 30px rgba(0,0,0,.35);position:relative;flex:none}
+body.light .phone{border-color:#2a221a}
+.phone::before{content:"";display:block;width:46px;height:5px;background:#000;border-radius:3px;margin:-6px auto 8px;opacity:.6}
+.ptitle{font-family:var(--head);font-size:11px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.mseg{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:2px;margin-bottom:5px}
+.mseg span{flex:1;text-align:center;font-size:8px;padding:4px 2px;border-radius:3px;white-space:nowrap}
+.mseg span.on{background:var(--btn);color:var(--btn-text);font-weight:700}
+.mseg span.on.red{background:var(--red);color:var(--on-color)}
+.mseg.lg span{font-size:12px;padding:7px 8px}
+/* mini grid */
+.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.mc{background:var(--card);color:var(--card-text);border-radius:2px;font-family:var(--cardfont);font-weight:600;font-size:7.5px;letter-spacing:.03em;text-transform:uppercase;padding:7px 1px;text-align:center;overflow:hidden;white-space:nowrap;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.screen:not(.small) .mc{font-size:9px;padding:9px 1px}
+.mc.rev.r,.mk.r{background:var(--red);color:var(--on-color)}
+.mc.rev.b,.mk.b{background:var(--blue);color:var(--on-color)}
+.mc.rev.n,.mk.n{background:var(--neutral);color:var(--on-neutral)}
+.mc.rev.a,.mk.a{background:var(--assassin);color:#fff}
+.mc.rev{opacity:.85;box-shadow:none}
+.mc.pk.r{box-shadow:inset 0 0 0 2px var(--red);background:color-mix(in srgb,var(--red) 22%,var(--card))}
+.mc.pk.b{box-shadow:inset 0 0 0 2px var(--blue);background:color-mix(in srgb,var(--blue) 22%,var(--card))}
+.mc.pk.n{box-shadow:inset 0 0 0 2px var(--neutral)}
+.mc.pk.a{background:#3b3b3b;color:#fff}
+.mk{border-radius:3px;font-family:var(--cardfont);font-weight:600;font-size:6.5px;text-transform:uppercase;text-align:center;padding:9px 1px;overflow:hidden;white-space:nowrap;position:relative}
+.mk.dim{opacity:.2;filter:grayscale(.9)} .mk.a.dim{opacity:.75;filter:none}
+.mk.mark{opacity:.25} .mk.mark::after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:1.5px solid currentColor;transform:rotate(-20deg)}
+.mk.sel{outline:2.5px solid var(--accent);outline-offset:-2.5px}
+.keyframe{border:4px solid var(--red);border-radius:6px;padding:3px;background:var(--surface)}
+.tap{position:relative}
+.tap::after{content:"👆";position:absolute;right:-6px;bottom:-14px;font-size:18px;animation:tapa 1.4s infinite;z-index:3;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+@keyframes tapa{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px) scale(.92)}}
+.hl{outline:2.5px solid var(--accent);outline-offset:1px}
+/* misc demo pieces */
+.mstatus{display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.mpill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 7px 2px 2px;font-size:9px;font-weight:700;color:var(--on-color)}
+.mpill.r{background:var(--red)} .mpill.b{background:var(--blue)}
+.mpill .av{width:16px;height:16px;border-radius:50%;overflow:hidden;background:var(--card)}
+.mpill .av svg{width:100%;height:100%;display:block}
+.mpill.act{outline:2px solid var(--accent);outline-offset:1px}
+.mturn{font-family:var(--head);font-size:10px;flex:1}
+.mtimer{font-family:var(--head);font-size:10px;border:1.5px solid var(--accent);border-radius:3px;padding:1px 5px}
+.mcode{font-family:var(--head);font-size:8px;border:1px dashed var(--muted);border-radius:3px;padding:2px 4px}
+.mclue{border:1px solid var(--line);background:var(--surface);border-radius:3px;font-size:8px;color:var(--muted);padding:4px 6px;margin-bottom:6px;font-family:var(--head)}
+.mactions{display:flex;gap:3px;justify-content:center;margin-top:6px}
+.mactions span{font-size:7.5px;border:1px solid var(--line);border-radius:3px;padding:3px 5px;white-space:nowrap}
+.mactions span.f{background:var(--red);color:var(--on-color);border-color:var(--red)}
+.bubble{background:var(--card);color:var(--card-text);font-family:var(--head);font-size:24px;padding:10px 18px;border-radius:14px;position:relative;box-shadow:var(--shadow)}
+.bubble::after{content:"";position:absolute;left:24px;bottom:-12px;border:8px solid transparent;border-top-color:var(--card)}
+.bigav{width:86px;height:86px;border-radius:50%;overflow:hidden;border:3px solid var(--red)}
+.bigav svg{width:100%;height:100%;display:block}
+.stack{display:flex;flex-direction:column;align-items:center;gap:14px}
+.arrow{font-size:28px;color:var(--accent)}
+.bigcard{width:220px;aspect-ratio:5/3.3;background:var(--card);color:var(--card-text);border-radius:6px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:16px 10px;font-family:var(--cardfont);font-weight:600;font-size:22px;letter-spacing:.08em;box-shadow:var(--shadow);position:relative}
+.bigcard .up{transform:rotate(180deg);opacity:.85}
+.bigcard::before{content:"";position:absolute;left:10%;right:10%;top:50%;border-top:1px solid var(--card-line)}
+.person{font-size:30px;line-height:1}
+.person.flip{transform:rotate(180deg)}
+.tstate{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-align:center;max-width:110px}
+.demo3{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.dc{width:96px;aspect-ratio:5/3.3;background:var(--card);color:var(--card-text);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--cardfont);font-weight:600;font-size:13px;letter-spacing:.05em;box-shadow:var(--shadow)}
+.dc.r{background:var(--red);color:var(--on-color)} .dc.n{background:var(--neutral);color:var(--on-neutral)} .dc.b{background:var(--blue);color:var(--on-color)}
+.dlabel{font-size:12px;color:var(--muted);text-align:center;margin-top:5px;max-width:120px}
+.mpanel{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:6px;margin-top:6px}
+.mpanel h4{margin:0 0 4px;font-family:var(--head);font-weight:400;font-size:9px}
+.mchip{display:inline-block;font-family:var(--cardfont);font-weight:600;font-size:7px;text-transform:uppercase;padding:2px 4px;border-radius:2px;color:var(--on-color);margin:0 2px 2px 0}
+.mchip.r{background:var(--red)} .mchip.x{text-decoration:line-through;opacity:.5}
+.minput{border:1px solid var(--line);background:var(--bg);border-radius:3px;font-size:8px;padding:4px;font-family:var(--head);margin-top:4px;display:flex;justify-content:space-between}
+.minput b{background:var(--btn);color:var(--btn-text);padding:0 4px;border-radius:2px;font-size:7px}
+.mnote{border:1px solid var(--line);background:var(--bg);border-radius:3px;font-size:8px;padding:5px;line-height:1.35;min-height:44px}
+.msetup{width:min(100%,360px);display:flex;flex-direction:column;gap:8px}
+.msetup .lbl{font-size:12px;color:var(--muted);margin-bottom:2px}
+.mteam{background:var(--surface);border-radius:6px;padding:10px;border-top:5px solid var(--red);display:flex;gap:10px;align-items:center;width:250px}
+.mteam.b{border-top-color:var(--blue)}
+.mteam .av{width:50px;height:50px;border-radius:50%;overflow:hidden;border:2.5px solid var(--red);flex:none}
+.mteam.b .av{border-color:var(--blue)}
+.mteam .av svg{width:100%;height:100%;display:block}
+.mteam .nm{font-family:var(--head);font-size:15px}
+.mteam .mb{font-size:12px;color:var(--muted)}
+.codecard{background:var(--card);color:var(--card-text);border-radius:8px;padding:14px 20px;text-align:center;box-shadow:var(--shadow)}
+.codecard .c{font-family:var(--head);font-size:30px;letter-spacing:.14em}
+.codecard small{font-size:12px;opacity:.7}
+.codegrow{display:flex;align-items:center;gap:8px;font-family:var(--head);font-size:20px;letter-spacing:.1em;margin-top:10px;justify-content:center}
+.codegrow .new{color:var(--accent)}
+.endcard{background:var(--card);color:var(--card-text);border-radius:10px;padding:16px 26px;text-align:center;box-shadow:var(--shadow)}
+.endcard .stamp{font-size:18px;color:var(--red);border-width:3px}
+.endcard h3{margin:4px 0;color:var(--red);font-size:20px}
+.endcard .av{width:64px;height:64px;margin:0 auto 6px}
+.endcard .av svg{width:100%;height:100%}
+.warnbox{background:var(--card);color:var(--card-text);border-radius:8px;padding:10px 12px;font-size:10px;text-align:center;max-width:170px;box-shadow:var(--shadow);margin-bottom:6px}
+.warnbox b{font-family:var(--head);font-weight:400;font-size:12px;display:block;margin-bottom:3px}
+
+/* modal + toast */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:18px}
+.dialog{background:var(--card);color:var(--card-text);border-radius:calc(var(--radius) + 6px);padding:22px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);max-height:90vh;overflow:auto}
+.dialog h2{margin:0 0 10px;font-size:25px}
+.dialog p{line-height:1.45;margin:0 0 16px}
+.dialog .rowc{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.dialog .btn.ghost{color:var(--card-text);border-color:var(--card-line)}
+.dialog .seg{background:rgba(0,0,0,.05);border-color:var(--card-line);margin-bottom:12px}
+.dialog .seg button{color:var(--card-text)}
+.dialog .seg button.on{background:#2a221a;color:#f4ecda}
+.dialog label{display:block;text-align:left;font-size:13px;margin:4px 0;opacity:.7}
+.bigcode{font-family:var(--head);font-size:clamp(34px,10vw,52px);letter-spacing:.14em;margin:6px 0 14px;word-break:break-all}
+.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 16px}
+.avgrid button{border:3px solid transparent;border-radius:50%;padding:0;background:none;aspect-ratio:1}
+.avgrid button.on{border-color:var(--accent)}
+.avgrid svg{width:100%;height:100%;display:block}
+.stamp{display:inline-block;border:4px solid currentColor;padding:4px 14px;transform:rotate(-4deg);font-family:var(--head);font-size:28px;margin-bottom:10px;text-transform:uppercase}
+.winav{width:90px;margin:0 auto 8px}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--btn);color:var(--btn-text);padding:10px 16px;border-radius:var(--radius);font-size:14px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="brand" id="brand" title="Zur Startseite"><span id="brandAv"></span><span class="lstamp">Geheimakte</span></button>
+  <div class="topright">
+    <button class="chip" id="helpBtn">?<span class="hm"> Anleitung</span></button>
+    <button class="chip" id="modeBtn"></button>
+  </div>
+</header>
+
+<!-- HOME -->
+<main id="home" class="page">
+  <div class="hero">
+    <h1 class="logo"><span class="lav" id="heroAv"></span><span class="lstamp">Geheimakte</span></h1>
+    <p>Zwei Teams, 25 Wörter, ein Hinweis pro Runde. Findet eure Agentinnen, bevor ihr den Attentäter erwischt.</p>
+  </div>
+  <div class="choices">
+    <button class="choice" id="goSetup"><div class="ic">🗂️</div><h3>Spiel einrichten</h3><p>Fürs Spielfeld auf PC, Beamer oder Tablet. Teams, Timer und Wörter festlegen.</p></button>
+    <button class="choice" id="goSpy"><div class="ic">🕵️‍♀️</div><h3>Hinweis-Karte</h3><p>Fürs Handy der Hinweisgebenden. Code eingeben, Farben sehen, Kombis planen.</p></button>
+    <button class="choice" id="goHelp"><div class="ic">📖</div><h3>Anleitung</h3><p>Wie die App funktioniert und wie man spielt.</p></button>
+  </div>
+  <div class="resume hidden" id="resumeBox"><button class="btn" id="resumeBtn"></button></div>
+  <div class="loadrow">Spielfeld mit bestimmtem Code laden:
+    <input class="code" id="loadCode" placeholder="CODE" autocomplete="off">
+    <button class="btn ghost" id="loadBtn">Laden</button>
+  </div>
+</main>
+
+<!-- SETUP -->
+<main id="setup" class="page hidden">
+  <h1 style="margin:10px 0 0;font-size:30px">Spiel einrichten</h1>
+  <p class="hint" style="font-size:15px">Alles ausser den Wörtern ist optional. Deine Einstellungen bleiben fürs nächste Spiel gespeichert.</p>
+
+  <section class="sect">
+    <h2>💻 Spielart</h2>
+    <p class="sub">Beim Tablet steht jedes Wort zweimal auf der Karte, einmal gedreht. So können beide Seiten vom Tisch lesen.</p>
+    <div class="seg" id="segMode"><button data-v="pc">PC / Beamer</button><button data-v="tablet">Tablet auf dem Tisch</button></div>
+  </section>
+
+  <section class="sect">
+    <h2>🔤 Wörter</h2>
+    <p class="sub">«Einfach» nimmt nur Alltagswörter, die auch Kinder kennen. «Gemischt» bringt mehr Doppeldeutiges wie Bank, Schloss oder Leiter.</p>
+    <div class="seg" id="segDiff"><button data-v="mix">Gemischt</button><button data-v="easy">Einfach</button></div>
+  </section>
+
+  <section class="sect">
+    <h2>👥 Teams <span style="font-size:13px;color:var(--muted);font-family:var(--body)">optional</span></h2>
+    <p class="sub">Tippe auf die Figur, um eine Agentin oder einen Agenten auszuwählen.</p>
+    <div class="teams">
+      <div class="teambox red"><div class="teamtop"><button class="avbtn" data-team="red"></button><input class="field" id="nameRed" placeholder="Team Rot" maxlength="24"></div><input class="field" id="memRed" placeholder="Wer spielt mit? (z. B. Sabrina, Sandro)"></div>
+      <div class="teambox blue"><div class="teamtop"><button class="avbtn" data-team="blue"></button><input class="field" id="nameBlue" placeholder="Team Blau" maxlength="24"></div><input class="field" id="memBlue" placeholder="Wer spielt mit?"></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <h2>⏱ Timer</h2>
+    <p class="sub">Zeit, die das Team für den nächsten Hinweis oder fürs Raten hat. Wird auf dem Spielfeld eingeblendet und von Hand gestartet.</p>
+    <div class="seg" id="segTimer"><button data-v="0">Aus</button><button data-v="30">30 s</button><button data-v="60">1 Min</button><button data-v="120">2 Min</button><button data-v="180">3 Min</button></div>
+  </section>
+
+  <section class="sect">
+    <h2>🔍 Wörter prüfen</h2>
+    <p class="sub">Tippe auf ein Wort, das ihr schon hattet oder das nicht passt. Es wird ausgetauscht. Die Farben bleiben bis zum Start geheim.</p>
+    <div class="pgrid" id="pgrid"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="reshuffle">🔀 Alle neu mischen</button><button class="btn ghost" id="undoSwap">↶ Tausch rückgängig</button></div>
+  </section>
+
+  <div class="setupfoot">
+    <div class="codeshow" id="setupCode"></div>
+    <button class="btn big" id="startBtn">Spiel starten →</button>
+  </div>
+</main>
+
+<!-- BOARD -->
+<main id="board" class="boardwrap hidden">
+  <div class="status">
+    <div class="pill red" id="pRed"></div>
+    <div class="pill blue" id="pBlue"></div>
+    <div class="turn" id="turn"></div>
+    <div class="timer hidden" id="timerBox"><button class="t" id="timerBtn" title="Start / Pause">1:00</button><button class="r" id="timerReset" title="Zurücksetzen">↺</button></div>
+    <button class="codebadge" id="codeBadge" title="Code gross anzeigen"></button>
+  </div>
+  <div class="cluebar"><input id="clue" placeholder="Hinweis notieren (optional), z. B. MEER 2" autocomplete="off"></div>
+  <div class="grid" id="grid"></div>
+  <div class="actions">
+    <button class="btn" id="passBtn">✋ Zug beenden</button>
+    <button class="btn ghost" id="undoBtn">↶ Rückgängig</button>
+    <button class="btn ghost" id="peekBtn">🕵️‍♀️ Schlüssel zeigen</button>
+    <button class="btn ghost" id="gearBtn">⚙️</button>
+    <button class="btn ghost" id="newBtn">🔀 Neues Spiel</button>
+  </div>
+</main>
+
+<!-- SPY -->
+<main id="spy" class="hidden">
+  <div class="enter" id="spyEnter">
+    <h2>🕵️‍♀️ Hinweis-Karte</h2>
+    <p style="color:var(--muted);line-height:1.4">Gib den Code ein, der auf dem Spielfeld steht. Wurden Wörter ausgetauscht, ist er länger, z. B. <b>KXQM-DK</b>.</p>
+    <input class="code" id="spyCode" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+    <div class="err" id="spyErr"></div>
+    <button class="btn" id="spyGo" style="margin-top:6px">Schlüssel öffnen</button>
+  </div>
+  <div class="spy hidden" id="spyKey">
+    <div class="spyhead"><h2 id="spyTitle"></h2><button class="btn ghost" id="spyChange" style="padding:7px 11px;font-size:13px">Code wechseln</button></div>
+    <div class="startline" id="spyStart"></div>
+    <div class="ctrl">
+      <div class="seg" id="segView"><button data-v="all">👁 Alles</button><button data-v="red" class="red">Ich bin Rot</button><button data-v="blue" class="blue">Ich bin Blau</button></div>
+      <div class="seg" id="segTool"><button data-v="mark">✓ Abhaken</button><button data-v="combo">🧩 Kombi planen</button></div>
+    </div>
+    <div class="keywrap" id="keywrap"><div class="keygrid" id="keygrid"></div></div>
+    <p class="hint" id="toolHint"></p>
+
+    <div class="panel hidden" id="comboPanel">
+      <h3>Neue Kombi</h3>
+      <div class="chips" id="selChips"></div>
+      <div class="warn" id="selWarn"></div>
+      <div class="row" style="margin-top:10px"><input class="field" id="comboClue" placeholder="Hinweis, z. B. MEER" maxlength="30"><button class="btn" id="comboSave">Speichern</button></div>
+    </div>
+
+    <div class="panel"><h3>🧩 Meine Kombis</h3><div id="comboList"></div></div>
+    <div class="panel"><h3>🎯 Noch ohne Kombi</h3><div id="freeList"></div></div>
+    <div class="panel"><h3>📝 Notizen</h3><textarea class="field" id="spyNotes" placeholder="Ideen, Stolperfallen, Wörter, die man nicht verwechseln darf …"></textarea></div>
+
+    <div class="legend">
+      <span><i style="background:var(--red)"></i>▲ Rot</span><span><i style="background:var(--blue)"></i>● Blau</span>
+      <span><i style="background:var(--neutral)"></i>– Neutral</span><span><i style="background:var(--assassin)"></i>☠ Attentäter</span>
+    </div>
+  </div>
+</main>
+
+<!-- HELP -->
+<main id="help" class="tour hidden">
+  <div class="tourtop"><h1>📖 So funktioniert's</h1><span class="tcount" id="tcount"></span></div>
+  <div class="tcard"><div class="tvis" id="tvis"></div><div class="ttext" id="ttext"></div></div>
+  <div class="tnav">
+    <button class="btn ghost" id="tprev">← Zurück</button>
+    <div class="dots" id="tdots"></div>
+    <button class="btn" id="tnext">Weiter →</button>
+  </div>
+  <p style="text-align:center;margin-top:16px"><button class="chip" id="helpBack">✕ Anleitung schliessen</button></p>
+</main>
+
+<div class="modal hidden" id="modal"><div class="dialog" id="dialog"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= Wörter ================= */
+const EASY_RAW = `Apfel Banane Birne Kirsche Erdbeere Zitrone Traube Karotte Tomate Gurke Kartoffel Kürbis Pilz Brot Käse Milch Ei Honig Kuchen Torte Keks Schokolade Pizza Suppe Nudel Pommes Glace Popcorn Hund Katze Maus Pferd Kuh Schwein Schaf Ziege Huhn Hahn Ente Hase Igel Fuchs Wolf Bär Löwe Tiger Elefant Giraffe Zebra Affe Krokodil Schlange Frosch Schnecke Biene Ameise Spinne Schmetterling Käfer Wurm Fisch Wal Hai Delfin Krake Qualle Pinguin Eule Rabe Taube Adler Schildkröte Dinosaurier Drache Einhorn Hexe Zauberer Geist Pirat Ritter König Prinzessin Krone Schatz Roboter Rakete Astronaut Planet Mond Sonne Stern Wolke Regen Schnee Regenbogen Blitz Wind Feuer Wasser Eis Berg Wald Baum Blatt Blume Rose Gras See Meer Insel Strand Muschel Sand Stein Höhle Vulkan Wüste Auto Bus Zug Velo Flugzeug Schiff Boot Traktor Bagger Kran Taxi Hubschrauber Feuerwehr Polizei Ampel Brücke Strasse Haus Tür Fenster Dach Treppe Bett Stuhl Tisch Lampe Kerze Uhr Spiegel Schlüssel Schloss Ball Puppe Teddy Würfel Puzzle Schaukel Rutsche Trampolin Ballon Geschenk Geburtstag Party Maske Kostüm Zirkus Clown Zoo Park Garten Schule Tafel Buch Stift Papier Schere Kleber Brief Karte Handy Computer Kamera Radio Gitarre Klavier Trommel Flöte Hut Mütze Schuh Stiefel Socke Hose Jacke Brille Tasche Rucksack Schirm Zahnbürste Seife Handtuch Badewanne Löffel Gabel Messer Teller Tasse Glas Flasche Topf Ofen Kühlschrank Besen Eimer Hammer Nagel Leiter Seil Knopf Ring Kette Herz Hand Fuss Auge Nase Ohr Zahn Haar Kopf Schneemann Schlitten Ski Iglu Fussball Tor Pokal Medaille Leuchtturm Burg Turm Kirche Mühle Zelt Feuerwerk Laterne Nest Feder Flügel Knochen Skelett Lupe Kompass Landkarte Detektiv Spion Koch Arzt Pilot Lehrer Bauer Kapitän Monster Alien Mumie Pyramide Kaktus Palme Tanne Sonnenblume Kleeblatt Hufeisen Diamant Gold Münze Geld Wecker Kalender Nacht Winter Sommer Herbst Frühling Schatten Kreis Dreieck Zahl Kissen Decke Sofa Fernseher Gespenst Wasserfall Fluss Bienenstock Bauernhof Spielplatz Rasen Eichhörnchen Marienkäfer Kamel Panda Koala Känguru Papagei Flamingo Seepferdchen Muffin Sandwich Würstchen Joghurt Ananas Melone Kokosnuss Erbse`;
+const EXTRA_RAW = `Bank Strauss Kiefer Golf Schimmel Tau Pflaster Bremse Mutter Fliege Läufer Steuer Gericht Strom Kater Mars Netz Stock Raupe Hering Bogen Absatz Schale Kamm Weide Bulle Rock Note Pass Zoll Dame Springer Joker Zelle Atom Virus Labor Mikroskop Teleskop Satellit Galaxie Komet Phönix Vampir Thron Zepter Wappen Fahne Rüstung Helm Schwert Schild Pfeil Richter Dieb Kasse Preis Rekord Ziel Start Rennen Sprung Fallschirm Ballett Bühne Konzert Film Theater Museum Kino Palast Hafen Anker Segel Bahnhof Tunnel Kreuzung Grenze Hotel Lager Fackel Gletscher Lawine Nebel Hagel Frost Hitze Oase Koralle Gorilla Schwan Gans Esel Stall Heu Ernte Sattel Marmelade Wurst Senf Burger Fondue Raclette Alphorn Kuhglocke Seilbahn Gondel Lift Rolltreppe Schraube Säge Zange Knoten Faden Nadel Band Zeitmaschine Labyrinth Brett Domino Kegel Murmel Kreisel Wippe Kristall Lehm Ziegel Beton Holz Eisen Kupfer Stahl Plastik Wolle Seide Leder Gummi Kugel Krawatte Schal Handschuh Pantoffel Pyjama Parfüm Lippenstift Wolkenkratzer Fabrik Büro Bibliothek Apotheke Bäckerei Friseur Kiosk Stadion Arena Schanze Piste Hütte Alp Wiese Acker Hecke Teich Bach Quelle Damm Kanal Schleuse Passwort Code Geheimnis Rätsel Witz Glück Pech Lotto Traum Schlaf Minute Sekunde Million Null Linie Punkt Fingerabdruck Globus Medizin Spital Akku Kabel Stecker Batterie Magnet Motor Rad Reifen Spur Tastatur Bildschirm Telefon Zeitung Heft Kreide Prüfung Pause Ferien Klasse Lied Geige Musik Tanz Foto Perle Silber Welle Sturm Donner Erde Luft Tal Wurzel Ast Rinde Schnabel Horn Schwanz Pfote Kralle Rücken Arm Knie Finger Daumen Bart Gürtel Kleid Mantel Koffer Keller Wand Boden Rahmen Bild Vase Pfanne Dose Kiste Korb Bürste Dusche Küche Butter Zucker Salz Pfeffer Reis Bonbon Orange Nuss Zwiebel Knoblauch Mais Kaffee Tee Saft Motorrad Kutsche Fähre Stadt Dorf Markt Laden Post Brunnen Zaun Fossil Krankenwagen Schläger Schwimmbad Ozean Eisbär Tulpe Eiche Agent Matrose Ufo Tag Licht Quadrat Ton Birke Linse Messe Schnitt Flasche Schuppe Kiwi Löwenzahn Wanze Taste Maske Mine Spinat Gabel Kater Riegel Feder Krone Stern Schlange Pilot Ring Tor`;
+const words = s => s.split(/\s+/).filter(Boolean);
+const EASY = [...new Set(words(EASY_RAW))];
+const MIXED = [...new Set([...EASY, ...words(EXTRA_RAW)])];
+
+/* ================= Code & Zufall ================= */
+const LET='ABCDEFGHJKMNPQRSTUVWXYZ', DIG='23456789';
+function seedFrom(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return (h^h>>>16)>>>0}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function rc(s){const b=new Uint32Array(1);crypto.getRandomValues(b);return s[b[0]%s.length]}
+function newBase(easy){return rc(LET)+rc(LET)+rc(LET)+(easy?rc(DIG):rc(LET))}
+function fmt(base,sw){return base+(sw?'-'+sw:'')}
+function parseCode(raw){
+  const c=(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const base=c.slice(0,4); const sw=c.slice(4).replace(/0/g,'O').replace(/1/g,'I');
+  if(base.length<4) return null;
+  if(![...base.slice(0,3)].every(x=>LET.includes(x)) || !(LET+DIG).includes(base[3])) return null;
+  if(sw.length>60 || ![...sw].every(x=>x>='A'&&x<='Y')) return null;
+  return {base,swaps:sw};
+}
+const opp=t=>t==='red'?'blue':'red';
+const NAME={red:'Rot',blue:'Blau'};
+const GLYPH={red:'▲',blue:'●',neutral:'–',assassin:'☠'};
+function makeGame(base,swaps=''){
+  const easy=/[2-9]$/.test(base);
+  const r=mulberry32(seedFrom('deckname-v2:'+base));
+  const deck=shuffle(easy?EASY:MIXED,r);
+  const start=r()<.5?'red':'blue';
+  const colors=shuffle([...Array(9).fill(start),...Array(8).fill(opp(start)),...Array(7).fill('neutral'),'assassin'],r);
+  const w=deck.slice(0,25); let n=25, used=0;
+  for(const ch of swaps){ if(n>=deck.length) break; w[ch.charCodeAt(0)-65]=deck[n++]; used++; }
+  return {base,swaps,code:fmt(base,swaps),easy,words:w,colors,start,deckLeft:deck.length-n};
+}
+function compute(g,events){
+  const rev=Array(25).fill(false); let turn=g.start, over=null;
+  const left=t=>g.colors.filter((x,i)=>x===t&&!rev[i]).length;
+  for(const e of events){
+    if(over) break;
+    if(e==='pass'){turn=opp(turn);continue}
+    rev[e]=true; const c=g.colors[e];
+    if(c==='assassin'){over={winner:opp(turn),loser:turn,reason:'assassin'};break}
+    if(left('red')===0){over={winner:'red',reason:'all'};break}
+    if(left('blue')===0){over={winner:'blue',reason:'all'};break}
+    if(c!==turn) turn=opp(turn);
+  }
+  return {rev,turn,over,red:left('red'),blue:left('blue')};
+}
+
+/* ================= Avatare ================= */
+const SKIN=['#f1d3b3','#e0b48f','#b98058','#7d5236'], HAIR=['#2b1d14','#6b3e1f','#c9a45c','#161311','#8a3b1d'];
+const AVATARS=[
+ {hb:'bob',hf:'fringe',gl:'sun',hat:'fedora',acc:'',s:0,h:0},
+ {hb:'long',hf:'side',gl:'round',hat:'beret',acc:'scarf',s:1,h:1},
+ {hb:'',hf:'short',gl:'none',hat:'deer',acc:'magn',s:2,h:3},
+ {hb:'long',hf:'fringe',gl:'none',hat:'',acc:'magn',s:3,h:3},
+ {hb:'',hf:'bun',gl:'round',hat:'',acc:'scarf',s:0,h:2},
+ {hb:'',hf:'curly',gl:'sun',hat:'',acc:'',s:2,h:3},
+ {hb:'bob',hf:'side',gl:'none',hat:'fedora',acc:'scarf',s:1,h:4},
+ {hb:'',hf:'short',gl:'sun',hat:'fedora',acc:'',s:3,h:0},
+];
+let avId=0;
+function avatar(i,color){
+  const a=AVATARS[i%AVATARS.length], id='av'+(avId++), H=HAIR[a.h], S=SKIN[a.s];
+  const hb={long:`<path d="M19 30 Q17 52 24 53 L40 53 Q47 52 45 30 Q45 17 32 17 Q19 17 19 30Z" fill="${H}"/>`,
+            bob:`<path d="M20 31 Q19 44 25 44 L39 44 Q45 44 44 31 Q44 17 32 17 Q20 17 20 31Z" fill="${H}"/>`}[a.hb]||'';
+  const hf={fringe:`<path d="M21 28 Q22 18 32 18 Q42 18 43 28 Q36 22 26 25 Q23 26 21 28Z" fill="${H}"/>`,
+            side:`<path d="M21 29 Q21 18 32 18 Q43 18 43 27 Q38 21 30 22 Q24 23 21 29Z" fill="${H}"/>`,
+            short:`<path d="M21 28 Q21 18 32 18 Q43 18 43 28 Q42 22 32 22 Q22 22 21 28Z" fill="${H}"/>`,
+            bun:`<circle cx="32" cy="15" r="5.5" fill="${H}"/><path d="M21 28 Q21 18 32 18 Q43 18 43 28 Q40 22 32 22 Q24 22 21 28Z" fill="${H}"/>`,
+            curly:[[21,26],[24,20],[30,17],[36,17],[41,21],[43,27],[20,32],[44,33]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="${H}"/>`).join('')}[a.hf]||'';
+  const gl={sun:`<rect x="22.5" y="27" width="8.5" height="5" rx="2" fill="#111"/><rect x="33" y="27" width="8.5" height="5" rx="2" fill="#111"/><path d="M31 29 H33" stroke="#111" stroke-width="1.5"/>`,
+            round:`<circle cx="27.5" cy="30" r="1.3" fill="#222"/><circle cx="36.5" cy="30" r="1.3" fill="#222"/><circle cx="27.5" cy="30" r="3.8" fill="none" stroke="#222" stroke-width="1.2"/><circle cx="36.5" cy="30" r="3.8" fill="none" stroke="#222" stroke-width="1.2"/><path d="M31.3 30 H32.7" stroke="#222" stroke-width="1.2"/>`,
+            none:`<circle cx="28" cy="30" r="1.4" fill="#222"/><circle cx="36" cy="30" r="1.4" fill="#222"/><path d="M25.5 27 Q28 26 30 27 M34 27 Q36 26 38.5 27" stroke="#222" stroke-width=".9" fill="none"/>`}[a.gl];
+  const hat={fedora:`<path d="M20 21 Q21 8 32 8 Q43 8 44 21Z" fill="#2a221a"/><path d="M28 9 Q32 13 36 9" stroke="#14100c" stroke-width="1.2" fill="none"/><rect x="20.5" y="16.5" width="23" height="3.6" fill="${color}"/><ellipse cx="32" cy="21" rx="17.5" ry="3.3" fill="#2a221a"/>`,
+            beret:`<ellipse cx="30" cy="18.5" rx="14.5" ry="5.6" fill="${color}" transform="rotate(-10 30 18.5)"/><circle cx="31" cy="13" r="1.7" fill="${color}"/>`,
+            deer:`<path d="M20.5 23 Q20.5 9.5 32 9.5 Q43.5 9.5 43.5 23Z" fill="#8a6e4b"/><path d="M26 10.5 V23 M32 9.5 V23 M38 10.5 V23 M21 16 H43" stroke="#6a5236" stroke-width="1"/><path d="M38 22 Q47 21 48 25 L38 24Z" fill="#7a5f40"/><circle cx="32" cy="9.5" r="1.6" fill="#6a5236"/>`}[a.hat]||'';
+  const acc={magn:`<circle cx="50" cy="49" r="6.5" fill="rgba(255,255,255,.3)" stroke="#c8a45a" stroke-width="2.6"/><path d="M45.5 54 L40 60" stroke="#c8a45a" stroke-width="3.2" stroke-linecap="round"/>`,
+             scarf:`<path d="M23.5 44 Q32 50 40.5 44 L41 48.5 Q32 54 23 48.5Z" fill="${color}" opacity=".9"/><path d="M37 49 L40 60 L35 59Z" fill="${color}"/>`}[a.acc]||'';
+  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="${id}"><circle cx="32" cy="32" r="32"/></clipPath></defs><g clip-path="url(#${id})">
+  <rect width="64" height="64" fill="#e9dcc0"/>${hb}
+  <path d="M7 66 Q9 46 32 44.5 Q55 46 57 66Z" fill="#3a3027"/>
+  <path d="M23 45.5 L32 60 L41 45.5 L37 44.5 L32 52 L27 44.5Z" fill="#5a4a3b"/>
+  <path d="M30 46 L32 58 L34 46Z" fill="${color}"/>
+  <rect x="28" y="37" width="8" height="9" fill="${S}"/>
+  <circle cx="32" cy="30" r="11" fill="${S}"/>${hf}${gl}
+  <path d="M29.2 35.6 Q32 37.6 34.8 35.6" stroke="#9a3428" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+  ${hat}${acc}</g></svg>`;
+}
+function shadesSVG(color){return `<svg viewBox="0 0 40 14" xmlns="http://www.w3.org/2000/svg"><path d="M2 3 H38" stroke="${color}" stroke-width="2"/><rect x="3" y="3" width="14" height="9" rx="4" fill="${color}" stroke="#111" stroke-width="1"/><rect x="23" y="3" width="14" height="9" rx="4" fill="${color}" stroke="#111" stroke-width="1"/><path d="M6 5 L10 5" stroke="#fff" stroke-width="1.2" opacity=".6"/><path d="M26 5 L30 5" stroke="#fff" stroke-width="1.2" opacity=".6"/></svg>`}
+const cvar=t=>getComputedStyle(document.body).getPropertyValue('--'+t).trim();
+
+/* ================= Speicher ================= */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let CFG=Object.assign({mode:'pc',easy:false,timer:0,teams:{red:{name:'',avatar:0,members:''},blue:{name:'',avatar:3,members:''}}},store.get('dn-cfg',{}));
+const saveCfg=()=>store.set('dn-cfg',CFG);
+let S=store.get('dn-board',null);  // {base,swaps,events,clue}
+let G=null, peek=false, endShown=false, lastFlip=-1;
+let SET=null; // setup {base,swaps,lastPos}
+let SP=store.get('dn-spy',{code:null,data:{}});
+let selected=[], tool='mark';
+const tname=t=>CFG.teams[t].name.trim()||('Team '+NAME[t]);
+
+/* ================= Hell / Dunkel ================= */
+function setMode(m){
+  document.body.classList.toggle('light',m==='light');
+  $('modeBtn').textContent=m==='light'?'🌙':'☀️'; $('modeBtn').title=m==='light'?'Dunkel':'Hell';
+  $('modeBtn').dataset.m=m; store.set('dn-mode',m);
+  $('brandAv').innerHTML=avatar(1,cvar('red')); $('heroAv').innerHTML=avatar(1,cvar('red'));
+  refreshView();
+}
+$('modeBtn').onclick=()=>setMode($('modeBtn').dataset.m==='light'?'dark':'light');
+
+/* ================= Views ================= */
+let VIEW='home';
+function show(v){
+  VIEW=v; ['home','setup','board','spy','help'].forEach(x=>$(x).classList.toggle('hidden',x!==v));
+  if(v!=='help') store.set('dn-view',v);
+  window.scrollTo(0,0); refreshView();
+}
+function refreshView(){
+  if(VIEW==='home') renderHome();
+  if(VIEW==='setup') renderSetup();
+  if(VIEW==='board') renderBoard(true);
+  if(VIEW==='spy') renderSpy();
+  if(VIEW==='help') renderTour();
+  requestAnimationFrame(fitAll);
+}
+let helpReturn='home';
+$('helpBtn').onclick=()=>{if(VIEW!=='help')helpReturn=VIEW;tstep=0;show('help')};
+$('goHelp').onclick=()=>{helpReturn='home';tstep=0;show('help')};
+$('helpBack').onclick=()=>show(helpReturn);
+$('brand').onclick=()=>show('home');
+
+/* ================= Text einpassen ================= */
+function fit(el){
+  el.classList.remove('wrap'); el.style.fontSize='';
+  let size=parseFloat(getComputedStyle(el).fontSize);
+  while(el.scrollWidth>el.clientWidth+1 && size>8){size-=.5;el.style.fontSize=size+'px'}
+  if(el.scrollWidth>el.clientWidth+1) el.classList.add('wrap');
+}
+function fitAll(){document.querySelectorAll('.card .word,.key .word,.pword .word').forEach(el=>{if(el.offsetParent)fit(el)})}
+window.addEventListener('resize',()=>requestAnimationFrame(fitAll));
+
+/* ================= Home ================= */
+function renderHome(){
+  const running = S && S.base && !compute(makeGame(S.base,S.swaps),S.events).over && S.events.length;
+  $('resumeBox').classList.toggle('hidden',!running);
+  if(running) $('resumeBtn').textContent='▶ Laufendes Spiel fortsetzen ('+fmt(S.base,S.swaps)+')';
+}
+$('resumeBtn').onclick=()=>{G=makeGame(S.base,S.swaps);endShown=false;show('board')};
+$('goSetup').onclick=()=>openSetup();
+$('goSpy').onclick=()=>openSpy();
+function loadGame(){
+  const p=parseCode($('loadCode').value);
+  if(!p){toast('Diesen Code kenne ich nicht. Beispiel: KXQM oder KXQM-DK');return}
+  startGame(p.base,p.swaps);
+}
+$('loadBtn').onclick=loadGame;
+$('loadCode').addEventListener('keydown',e=>{if(e.key==='Enter')loadGame()});
+
+/* ================= Setup ================= */
+function openSetup(){SET={base:newBase(CFG.easy),swaps:''};show('setup')}
+function bindSeg(id,get,set){
+  $(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.v);});
+  return ()=>{[...$(id).children].forEach(b=>b.classList.toggle('on',b.dataset.v===String(get())))};
+}
+const segModeR=bindSeg('segMode',()=>CFG.mode,v=>{CFG.mode=v;saveCfg();renderSetup()});
+const segDiffR=bindSeg('segDiff',()=>CFG.easy?'easy':'mix',v=>{const e=v==='easy';if(e!==CFG.easy){CFG.easy=e;saveCfg();SET={base:newBase(e),swaps:''}}renderSetup()});
+const segTimerR=bindSeg('segTimer',()=>CFG.timer,v=>{CFG.timer=+v;saveCfg();renderSetup()});
+[['nameRed','red','name'],['nameBlue','blue','name'],['memRed','red','members'],['memBlue','blue','members']].forEach(([id,t,k])=>{
+  $(id).addEventListener('input',e=>{CFG.teams[t][k]=e.target.value;saveCfg()});
+});
+document.querySelectorAll('.avbtn').forEach(b=>b.onclick=()=>pickAvatar(b.dataset.team));
+function pickAvatar(team){
+  const col=cvar(team);
+  dialog(`<h2>Wählt eure Figur</h2><p style="margin-bottom:6px">für ${esc(tname(team))}</p>
+    <div class="avgrid">${AVATARS.map((_,i)=>`<button data-a="av${i}" class="${CFG.teams[team].avatar===i?'on':''}">${avatar(i,col)}</button>`).join('')}</div>
+    <div class="rowc"><button class="btn ghost" data-a="close">Fertig</button></div>`,
+    Object.fromEntries(AVATARS.map((_,i)=>['av'+i,()=>{CFG.teams[team].avatar=i;saveCfg();closeModal();renderSetup()}])));
+}
+function renderSetup(){
+  if(!SET) SET={base:newBase(CFG.easy),swaps:''};
+  segModeR();segDiffR();segTimerR();
+  $('nameRed').value=CFG.teams.red.name; $('nameBlue').value=CFG.teams.blue.name;
+  $('memRed').value=CFG.teams.red.members; $('memBlue').value=CFG.teams.blue.members;
+  document.querySelectorAll('.avbtn').forEach(b=>b.innerHTML=avatar(CFG.teams[b.dataset.team].avatar,cvar(b.dataset.team)));
+  const g=makeGame(SET.base,SET.swaps);
+  $('pgrid').innerHTML=g.words.map((w,i)=>`<button class="pword${SET.lastPos===i?' new':''}" data-i="${i}"><span class="word">${w}</span></button>`).join('');
+  SET.lastPos=-1;
+  $('undoSwap').disabled=!SET.swaps;
+  $('setupCode').innerHTML=`<small>Code für die Handys</small>${fmt(SET.base,SET.swaps)}`;
+  requestAnimationFrame(fitAll);
+}
+$('pgrid').addEventListener('click',e=>{
+  const b=e.target.closest('.pword'); if(!b) return;
+  const i=+b.dataset.i; const g=makeGame(SET.base,SET.swaps);
+  if(g.deckLeft<=0){toast('Keine Ersatzwörter mehr. Mische lieber neu.');return}
+  SET.swaps+=String.fromCharCode(65+i); SET.lastPos=i; renderSetup();
+});
+$('reshuffle').onclick=()=>{SET={base:newBase(CFG.easy),swaps:''};renderSetup();toast('Neue Wörter gemischt')};
+$('undoSwap').onclick=()=>{SET.swaps=SET.swaps.slice(0,-1);renderSetup()};
+$('startBtn').onclick=()=>{startGame(SET.base,SET.swaps);showCode()};
+
+/* ================= Spielfeld ================= */
+function startGame(base,swaps){
+  S={base,swaps,events:[],clue:''}; G=makeGame(base,swaps); peek=false; endShown=false; saveS(); timerReset(); show('board');
+}
+function saveS(){store.set('dn-board',S)}
+function pillHTML(t,st){
+  const isStart=G.start===t;
+  return `${isStart?`<span class="shades" title="beginnt">${shadesSVG(cvar(t))}</span>`:''}<span class="av">${avatar(CFG.teams[t].avatar,cvar(t))}</span><span class="nm">${esc(tname(t))}</span><span class="n">${st[t]}</span>`;
+}
+function renderBoard(rebuild){
+  if(!S) {show('home');return}
+  if(!G||G.code!==fmt(S.base,S.swaps)) {G=makeGame(S.base,S.swaps);rebuild=true}
+  const st=compute(G,S.events), grid=$('grid'), tab=CFG.mode==='tablet';
+  grid.classList.toggle('tablet',tab);
+  if(rebuild||grid.children.length!==25||grid.dataset.tab!==String(tab)){
+    grid.dataset.tab=tab; grid.innerHTML='';
+    G.words.forEach((w,i)=>{
+      const b=document.createElement('button');
+      b.className='card c-'+G.colors[i];
+      b.innerHTML=`<span class="glyph">${GLYPH[G.colors[i]]}</span>`+(tab?`<span class="word flipw">${w}</span>`:'')+`<span class="word">${w}</span>`;
+      b.setAttribute('aria-label',w); b.onclick=()=>reveal(i); grid.appendChild(b);
+    });
+  }
+  [...grid.children].forEach((b,i)=>{b.classList.toggle('rev',st.rev[i]);if(i===lastFlip){b.classList.remove('flip');void b.offsetWidth;b.classList.add('flip')}});
+  lastFlip=-1;
+  grid.classList.toggle('peek',peek&&!st.over); grid.classList.toggle('done',!!st.over);
+  $('pRed').innerHTML=pillHTML('red',st); $('pBlue').innerHTML=pillHTML('blue',st);
+  $('pRed').classList.toggle('active',!st.over&&st.turn==='red'); $('pBlue').classList.toggle('active',!st.over&&st.turn==='blue');
+  $('turn').innerHTML = st.over ? `<span class="who ${st.over.winner}">${esc(tname(st.over.winner))}</span> gewinnt`
+    : `<span class="who ${st.turn}">${esc(tname(st.turn))}</span> ist dran`+(peek?' <span class="peekbanner">Schlüssel sichtbar</span>':'');
+  $('codeBadge').textContent='Code '+fmt(S.base,S.swaps);
+  $('clue').value=S.clue||'';
+  $('passBtn').disabled=!!st.over; $('passBtn').className='btn '+(st.over?'':st.turn);
+  $('undoBtn').disabled=!S.events.length;
+  $('peekBtn').textContent=peek?'🙈 Schlüssel verbergen':'🕵️‍♀️ Schlüssel zeigen'; $('peekBtn').disabled=!!st.over;
+  $('timerBox').classList.toggle('hidden',!CFG.timer); timerDraw();
+  if(st.over){timerPause(); if(!endShown){endShown=true;setTimeout(()=>showEnd(st),550)}}
+  requestAnimationFrame(fitAll);
+}
+function afterChange(prevTurn){
+  const st=compute(G,S.events);
+  if(st.turn!==prevTurn){S.clue='';timerReset()}
+  saveS(); renderBoard(); return st;
+}
+function reveal(i){
+  const st=compute(G,S.events);
+  if(st.over||st.rev[i]) return;
+  if(peek){toast('Zuerst den Schlüssel verbergen');return}
+  S.events.push(i); lastFlip=i;
+  const n=afterChange(st.turn);
+  if(!n.over){const c=G.colors[i];
+    if(c==='neutral') toast('Neutral. '+tname(n.turn)+' ist dran.');
+    else if(c!==st.turn) toast('Autsch, das war ein Wort von '+tname(c)+'! '+tname(n.turn)+' ist dran.');}
+}
+$('passBtn').onclick=()=>{const t=compute(G,S.events).turn;S.events.push('pass');afterChange(t)};
+$('undoBtn').onclick=()=>{if(!S.events.length)return;const t=compute(G,S.events).turn;S.events.pop();endShown=false;afterChange(t)};
+$('clue').addEventListener('input',e=>{S.clue=e.target.value;saveS()});
+$('peekBtn').onclick=()=>{
+  if(peek){peek=false;renderBoard();return}
+  dialog(`<h2>🕵️‍♀️ Nur für Hinweisgebende</h2><p>Alle anderen schauen jetzt weg! Danach den Schlüssel wieder verbergen, bevor geraten wird.</p>
+  <div class="rowc"><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn" data-a="go">Schlüssel zeigen</button></div>`,{go:()=>{peek=true;closeModal();renderBoard()}});
+};
+$('gearBtn').onclick=()=>{
+  const m=CFG.mode, t=CFG.timer;
+  dialog(`<h2>⚙️ Einstellungen</h2>
+  <label>Spielart</label><div class="seg"><button data-a="pc" class="${m==='pc'?'on':''}">PC / Beamer</button><button data-a="tablet" class="${m==='tablet'?'on':''}">Tablet</button></div>
+  <label>Timer</label><div class="seg">${[0,30,60,120,180].map(v=>`<button data-a="t${v}" class="${t===v?'on':''}">${v?(v<60?v+' s':v/60+' Min'):'Aus'}</button>`).join('')}</div>
+  <div class="rowc"><button class="btn" data-a="close">Fertig</button></div>`,
+  Object.assign({pc:()=>{CFG.mode='pc';saveCfg();closeModal();renderBoard(true)},tablet:()=>{CFG.mode='tablet';saveCfg();closeModal();renderBoard(true)}},
+    Object.fromEntries([0,30,60,120,180].map(v=>['t'+v,()=>{CFG.timer=v;saveCfg();timerReset();closeModal();renderBoard()}]))));
+};
+$('newBtn').onclick=()=>{
+  if(!S.events.length||compute(G,S.events).over){openSetup();return}
+  dialog(`<h2>Neues Spiel?</h2><p>Das laufende Spiel geht verloren.</p><div class="rowc"><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn" data-a="go">Neues Spiel einrichten</button></div>`,{go:()=>{closeModal();openSetup()}});
+};
+$('codeBadge').onclick=showCode;
+function showCode(){
+  const g=G||makeGame(S.base,S.swaps);
+  dialog(`<p style="margin-bottom:2px">Code für die Hinweis-Karte</p><div class="bigcode">${g.code}</div>
+  <p>Hinweisgebende öffnen die App auf dem Handy, wählen <b>Hinweis-Karte</b> und tippen den Code ein.<br><br>Es beginnt <b style="color:var(--${g.start})">${esc(tname(g.start))}</b> 🕶 mit 9 Wörtern.</p>
+  <div class="rowc"><button class="btn" data-a="close">Los geht's</button></div>`);
+}
+function showEnd(st){
+  const w=st.over.winner;
+  const text=st.over.reason==='assassin'?`${esc(tname(st.over.loser))} hat den Attentäter erwischt. ☠`:`Alle Agentinnen von ${esc(tname(w))} sind enttarnt.`;
+  const mem=CFG.teams[w].members.trim();
+  dialog(`<div class="winav">${avatar(CFG.teams[w].avatar,cvar(w))}</div><div class="stamp" style="color:var(--${w})">Fall gelöst</div>
+  <h2 style="color:var(--${w})">${esc(tname(w))} gewinnt!</h2><p>${text}${mem?'<br><br>Gratulation, '+esc(mem)+'!':''}</p>
+  <div class="rowc"><button class="btn ghost" data-a="close">Feld ansehen</button><button class="btn" data-a="go">Neues Spiel</button></div>`,{go:()=>{closeModal();openSetup()}});
+}
+
+/* ================= Timer ================= */
+const T={left:0,run:false,id:null,ac:null};
+function timerReset(){timerPause();T.left=CFG.timer;timerDraw()}
+function timerPause(){T.run=false;clearInterval(T.id);T.id=null;timerDraw()}
+function timerStart(){
+  if(!CFG.timer) return;
+  if(T.left<=0) T.left=CFG.timer;
+  try{T.ac=T.ac||new (window.AudioContext||window.webkitAudioContext)();T.ac.resume()}catch(e){}
+  T.run=true; clearInterval(T.id);
+  T.id=setInterval(()=>{T.left--; if(T.left<=0){T.left=0;timerPause();beep();toast('⏰ Zeit ist um!')} timerDraw()},1000);
+  timerDraw();
+}
+function timerDraw(){
+  const b=$('timerBtn'); if(!b) return;
+  const m=Math.floor(T.left/60), s=T.left%60;
+  b.textContent=(T.run?'':'▶ ')+m+':'+String(s).padStart(2,'0');
+  b.classList.toggle('run',T.run); b.classList.toggle('low',T.run&&T.left<=10&&T.left>0); b.classList.toggle('out',T.left===0&&CFG.timer>0);
+}
+function beep(){
+  if(!T.ac) return;
+  try{[0,.25,.5].forEach(d=>{const o=T.ac.createOscillator(),g=T.ac.createGain();o.frequency.value=880;o.connect(g);g.connect(T.ac.destination);const t=T.ac.currentTime+d;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.21)})}catch(e){}
+}
+$('timerBtn').onclick=()=>T.run?timerPause():timerStart();
+$('timerReset').onclick=timerReset;
+
+/* ================= Hinweis-Karte ================= */
+function spyData(){return SP.data[SP.code]||(SP.data[SP.code]={view:'all',marks:[],combos:[],notes:''})}
+const saveSP=()=>store.set('dn-spy',SP);
+function openSpy(code){
+  if(code!==undefined){SP.code=code;saveSP()}
+  selected=[]; show('spy');
+}
+function trySpy(){
+  const p=parseCode($('spyCode').value);
+  if(!p){$('spyErr').textContent='Diesen Code kenne ich nicht. Beispiel: KXQM oder KXQM-DK';return}
+  const code=fmt(p.base,p.swaps);
+  const keep={}; if(SP.data[code]) keep[code]=SP.data[code]; SP.data=keep; // nur aktuelles Spiel behalten
+  openSpy(code);
+}
+$('spyGo').onclick=trySpy;
+$('spyCode').addEventListener('keydown',e=>{if(e.key==='Enter')trySpy()});
+$('spyChange').onclick=()=>{SP.code=null;saveSP();$('spyCode').value='';$('spyErr').textContent='';renderSpy()};
+const segViewR=bindSeg('segView',()=>spyData().view,v=>{spyData().view=v;saveSP();renderSpy()});
+const segToolR=bindSeg('segTool',()=>tool,v=>{tool=v;selected=[];renderSpy()});
+$('spyNotes').addEventListener('input',e=>{spyData().notes=e.target.value;saveSP()});
+function renderSpy(){
+  const has=!!SP.code;
+  $('spyEnter').classList.toggle('hidden',has); $('spyKey').classList.toggle('hidden',!has);
+  if(!has) return;
+  const p=parseCode(SP.code); const g=makeGame(p.base,p.swaps); const d=spyData();
+  segViewR(); segToolR();
+  $('spyTitle').textContent='Schlüssel · '+g.code;
+  $('spyStart').innerHTML=`${shadesSVG(cvar(g.start))}<b style="background:var(--${g.start})">${NAME[g.start]}</b> beginnt mit 9 Wörtern, ${NAME[opp(g.start)]} hat 8.`;
+  $('keywrap').className='keywrap '+g.start;
+  const team=d.view!=='all'?d.view:null;
+  const inCombo=i=>d.combos.filter(c=>!c.used&&c.idx.includes(i)).length;
+  $('keygrid').innerHTML=g.words.map((w,i)=>{
+    const c=g.colors[i], cls=['key','c-'+c];
+    if(team&&c!==team) cls.push('dim');
+    if(d.marks.includes(i)) cls.push('marked');
+    if(selected.includes(i)) cls.push('sel');
+    const n=inCombo(i);
+    return `<button class="${cls.join(' ')}" data-i="${i}"><span class="glyph">${GLYPH[c]}</span><span class="word">${w}</span>${n?`<span class="cnum">🧩${n>1?n:''}</span>`:''}</button>`;
+  }).join('');
+  $('toolHint').textContent= tool==='mark' ? 'Tippe ein Wort an, sobald es auf dem Spielfeld aufgedeckt wurde.' : 'Tippe die Wörter an, die du mit einem Hinweis verbinden willst.';
+  // Kombi-Panel
+  $('comboPanel').classList.toggle('hidden',tool!=='combo');
+  if(tool==='combo'){
+    $('selChips').innerHTML=selected.length?selected.map(i=>`<span class="wchip c-${g.colors[i]}">${g.words[i]}</span>`).join(''):'<span class="hint" style="margin:0">Noch nichts ausgewählt.</span>';
+    let warn='';
+    if(selected.some(i=>g.colors[i]==='assassin')) warn='☠ Achtung, der Attentäter ist dabei!';
+    else if(team&&selected.some(i=>g.colors[i]===opp(team))) warn='⚠ Ein Wort vom anderen Team ist dabei.';
+    else if(team&&selected.some(i=>g.colors[i]==='neutral')) warn='Ein neutrales Wort ist dabei.';
+    $('selWarn').textContent=warn;
+  }
+  // Kombi-Liste
+  $('comboList').innerHTML=d.combos.length? d.combos.map((c,k)=>`<div class="combo${c.used?' used':''}">
+    <div class="cl">${esc(c.clue.toUpperCase())} <small>${c.idx.length}</small></div>
+    <div class="bd"><div class="chips">${c.idx.map(i=>`<span class="wchip c-${g.colors[i]}${d.marks.includes(i)?' done':''}">${g.words[i]}</span>`).join('')}</div></div>
+    <div style="display:flex;flex-direction:column;gap:4px"><button class="mini" data-used="${k}">${c.used?'↶':'✓ gesagt'}</button><button class="mini" data-del="${k}">🗑</button></div></div>`).join('')
+    : '<p class="hint" style="margin:0">Noch keine Kombis. Wechsle oben zu «Kombi planen».</p>';
+  // freie Wörter
+  if(!team){$('freeList').innerHTML='<p class="hint" style="margin:0">Wähle oben «Ich bin Rot» oder «Ich bin Blau», dann siehst du hier deine offenen Wörter.</p>'}
+  else{
+    const free=g.words.map((w,i)=>i).filter(i=>g.colors[i]===team&&!d.marks.includes(i)&&!inCombo(i));
+    const left=g.words.filter((w,i)=>g.colors[i]===team&&!d.marks.includes(i)).length;
+    $('freeList').innerHTML=`<p class="hint" style="margin:0 0 8px">Noch ${left} Wörter offen, davon ${free.length} ohne Kombi.</p><div class="chips">${free.map(i=>`<span class="wchip c-${team}">${g.words[i]}</span>`).join('')||'<span class="hint" style="margin:0">Alles verplant. 🎉</span>'}</div>`;
+  }
+  if(document.activeElement!==$('spyNotes')) $('spyNotes').value=d.notes||'';
+  requestAnimationFrame(fitAll);
+}
+$('keygrid').addEventListener('click',e=>{
+  const b=e.target.closest('.key'); if(!b) return; const i=+b.dataset.i, d=spyData();
+  if(tool==='mark'){const k=d.marks.indexOf(i);k>=0?d.marks.splice(k,1):d.marks.push(i);saveSP()}
+  else{const k=selected.indexOf(i);k>=0?selected.splice(k,1):selected.push(i)}
+  renderSpy();
+});
+$('comboSave').onclick=()=>{
+  const clue=$('comboClue').value.trim();
+  if(!selected.length){toast('Wähle zuerst Wörter aus');return}
+  if(!clue){toast('Schreib noch den Hinweis dazu');$('comboClue').focus();return}
+  spyData().combos.push({clue,idx:selected.slice(),used:false}); saveSP();
+  selected=[]; $('comboClue').value=''; renderSpy(); toast('Kombi gespeichert');
+};
+$('comboClue').addEventListener('keydown',e=>{if(e.key==='Enter')$('comboSave').click()});
+$('comboList').addEventListener('click',e=>{
+  const d=spyData(), u=e.target.closest('[data-used]'), x=e.target.closest('[data-del]');
+  if(u){const c=d.combos[+u.dataset.used];c.used=!c.used; saveSP();renderSpy()}
+  if(x){d.combos.splice(+x.dataset.del,1);saveSP();renderSpy()}
+});
+
+
+/* ================= Anleitung (Tour) ================= */
+const DW=['Wal','Bank','Fuchs','Leiter','Insel','Roboter','Schloss','Krone','Kerze','Pirat','Mond','Zug','Fisch','Honig','Stern','Burg','Uhr','Hai','Ball','Eis','Drache','Velo','Strand','Pilz','Rakete'];
+const DC='r b n r r b a r n b n b r n b n r r n b b n r b r'.split(' ');
+function mg(o={}){
+  return `<div class="mg">${DW.map((w,i)=>{
+    const c=DC[i]; let cls='mc';
+    if(o.key){cls='mk '+c; if(o.dim&&c!==o.dim)cls+=' dim'; if(o.mark&&o.mark.includes(i))cls+=' mark'; if(o.sel&&o.sel.includes(i))cls+=' sel';}
+    else{ if(o.rev&&o.rev.includes(i))cls+=' rev '+c; else if(o.peek)cls+=' pk '+c; }
+    if(o.hl&&o.hl.includes(i))cls+=' hl'; if(o.tap===i)cls+=' tap';
+    const txt=o.swap&&o.swap[i]?o.swap[i]:w;
+    return `<div class="${cls}">${o.key?`<div style="font-size:7px">${GLYPH[{r:'red',b:'blue',n:'neutral',a:'assassin'}[c]]}</div>`:''}${txt}</div>`;}).join('')}</div>`;
+}
+const nb=n=>`<span class="nb">${n}</span>`;
+function mpill(t,n,act){return `<span class="mpill ${t[0]}${act?' act':''}"><span class="av">${avatar(CFG.teams[t].avatar,cvar(t))}</span>${n}</span>`}
+function boardMock(o={}){
+  return `<div class="screen${o.small?' small':''}"><div class="mstatus">${o.nums?nb(1):''}${mpill('red',9,true)}${mpill('blue',8)}<span class="mturn">${o.nums?nb(2)+' ':''}<span style="background:var(--red);color:var(--on-color);padding:1px 4px;border-radius:2px">Rot</span> ist dran</span>${o.nums?nb(3):''}<span class="mtimer">0:42</span>${o.nums?nb(4):''}<span class="mcode">KXQM</span></div>
+  <div class="mclue">${o.nums?nb(5)+' ':''}OZEAN 3</div>${mg(o.grid||{})}<div class="mactions">${o.nums?nb(6):''}<span class="f">✋ Zug beenden</span><span>↶ Rückgängig</span><span>🕵️‍♀️ Schlüssel</span><span>⚙️</span></div></div>`;
+}
+function phone(inner,title){return `<div class="phone"><div class="ptitle">${title||'Schlüssel · KXQM'}</div>${inner}</div>`}
+const TOUR=[
+ {t:'Willkommen bei Geheimakte',
+  v:()=>`<div class="laptop"><div class="screen small" style="width:250px">${mg({rev:[0,12]})}</div><div class="base"></div></div>
+         <div style="display:flex;gap:10px">${phone(`<div class="keyframe">${mg({key:true})}</div>`)}</div>`,
+  x:`<p>Ihr braucht <b>ein Gerät fürs Spielfeld</b> (PC, Beamer oder Tablet in der Tischmitte) und am besten <b>ein Handy pro Person, die Hinweise gibt</b>.</p><p>Das Spielfeld sehen alle. Die Farben sehen nur die Hinweisgebenden auf ihrem Handy.</p>`,
+  tip:'Nur ein Gerät da? Das geht auch, siehe Schritt «Nur ein Gerät».'},
+ {t:'Das Spiel in 30 Sekunden',
+  v:()=>`<div class="stack"><div style="display:flex;gap:12px;align-items:flex-end"><div class="bigav">${avatar(CFG.teams.red.avatar,cvar('red'))}</div><div class="bubble">«OZEAN 3»</div></div>
+         <div class="screen small" style="width:300px">${mg({hl:[0,12,17]})}</div></div>`,
+  x:`<p>Die Hinweisgebenden sagen <b>ein Wort und eine Zahl</b>. «Ozean 3» heisst: Drei unserer Wörter passen zu Ozean. Hier wären das Wal, Fisch und Hai.</p><p>Das Team tippt Karten an. Eigene Farbe: weiter. Neutral oder fremd: Zug vorbei. Der <b>Attentäter ☠</b> verliert sofort.</p>`,
+  tip:'Wer beginnt, hat 9 Wörter, das andere Team 8. Wer zuerst alle eigenen findet, gewinnt.'},
+ {t:'Spiel einrichten',
+  v:()=>`<div class="msetup"><div><div class="lbl">💻 Spielart</div><div class="mseg lg"><span class="on">PC / Beamer</span><span>Tablet</span></div></div>
+         <div><div class="lbl">🔤 Wörter</div><div class="mseg lg"><span class="on">Gemischt</span><span>Einfach</span></div></div>
+         <div><div class="lbl">⏱ Timer</div><div class="mseg lg"><span>Aus</span><span>30 s</span><span class="on">1 Min</span><span>2 Min</span></div></div></div>`,
+  x:`<p>Auf der Startseite tippst du auf <b>Spiel einrichten</b>. Dort wählst du die Spielart, die Wörter und ob ihr einen Timer wollt.</p><p><b>Gemischt</b> bringt viele doppeldeutige Wörter wie Bank oder Leiter. <b>Einfach</b> nimmt nur Wörter, die auch Kinder kennen.</p>`,
+  tip:'Alles ausser den Wörtern ist optional. Deine Einstellungen bleiben fürs nächste Spiel gespeichert.'},
+ {t:'Teams und Figuren',
+  v:()=>`<div class="stack"><div class="mteam"><div class="av">${avatar(CFG.teams.red.avatar,cvar('red'))}</div><div><div class="nm">${esc(tname('red'))}</div><div class="mb">${esc(CFG.teams.red.members||'Sabrina, Sandro')}</div></div></div>
+         <div class="mteam b"><div class="av">${avatar(CFG.teams.blue.avatar,cvar('blue'))}</div><div><div class="nm">${esc(tname('blue'))}</div><div class="mb">${esc(CFG.teams.blue.members||'Jeanine, Gabriela')}</div></div></div></div>`,
+  x:`<p>Tippe auf die Figur, um eine Detektivin oder einen Detektiv auszusuchen. Dazu kannst du einen Teamnamen und die Mitspielenden eintragen.</p>`,
+  tip:'Teamname und Figur erscheinen auf dem Spielfeld und beim Sieg. Lässt du alles leer, heissen die Teams einfach Rot und Blau.'},
+ {t:'Wörter prüfen und tauschen',
+  v:()=>`<div class="stack"><div class="screen small" style="width:300px">${mg({tap:8,swap:{8:'Kompass'},hl:[8]})}</div>
+         <div class="codegrow"><span>KXQM</span><span class="arrow">→</span><span>KXQM<span class="new">-I</span></span></div></div>`,
+  x:`<p>Vor dem Start siehst du die 25 Wörter, noch ohne Farben. Hattet ihr ein Wort schon oder passt es nicht, <b>tippst du es an</b>. Es wird sofort ersetzt.</p><p>Mit «Tausch rückgängig» holst du es zurück, mit «Alle neu mischen» gibt's ein ganz neues Feld.</p>`,
+  tip:'Nach jedem Tausch wird der Code länger. Das ist Absicht: Die Buchstaben nach dem Strich sagen dem Handy, welche Karten getauscht wurden.'},
+ {t:'Code aufs Handy',
+  v:()=>`<div class="codecard"><small>Code für die Hinweis-Karte</small><div class="c">KXQM-I</div></div><span class="arrow">→</span>
+         ${phone(`<div style="text-align:center;padding:16px 4px"><div style="font-size:22px">🕵️‍♀️</div><div style="font-family:var(--head);font-size:12px;margin:6px 0">Hinweis-Karte</div><div class="minput" style="justify-content:center;font-size:13px;letter-spacing:.1em">KXQM-I</div><div class="mactions"><span class="f" style="background:var(--btn);color:var(--btn-text);border-color:var(--btn)">Schlüssel öffnen</span></div></div>`,'Geheimakte')}`,
+  x:`<p>Nach «Spiel starten» zeigt das Spielfeld den Code gross an. Die Hinweisgebenden öffnen die App auf dem Handy, wählen <b>Hinweis-Karte</b> und tippen den Code ein.</p><p>Gross- und Kleinschreibung spielt keine Rolle, den Bindestrich kann man weglassen.</p>`,
+  tip:'Code vergessen? Oben rechts auf dem Spielfeld steht er immer. Antippen zeigt ihn wieder gross an.'},
+ {t:'Das Spielfeld im Überblick',
+  v:()=>boardMock({nums:true,grid:{rev:[0,2]}}),
+  x:`<ol class="nums"><li>${nb(1)}<span><b>Teams</b> mit Figur und Anzahl Wörter, die noch fehlen. Die Sonnenbrille zeigt das Startteam, der goldene Rahmen, wer dran ist.</span></li>
+     <li>${nb(2)}<span><b>Wer ist dran?</b></span></li><li>${nb(3)}<span><b>Timer</b>, falls eingeschaltet.</span></li><li>${nb(4)}<span><b>Code</b> fürs Handy.</span></li>
+     <li>${nb(5)}<span><b>Hinweis notieren</b>, damit alle ihn sehen. Wird beim Teamwechsel geleert.</span></li><li>${nb(6)}<span><b>Knöpfe</b> für Zug beenden, Rückgängig, Schlüssel und Einstellungen.</span></li></ol>`,
+  tip:'Für den Beamer lohnt sich oft der helle Modus. Umschalten mit ☀️ oben rechts.'},
+ {t:'Karten antippen',
+  v:()=>`<div class="demo3"><div><div class="dc tap">WAL</div><div class="dlabel">Antippen …</div></div><span class="arrow">→</span>
+         <div><div class="dc r">WAL</div><div class="dlabel">Rot: weiterraten</div></div><div><div class="dc n">MOND</div><div class="dlabel">Neutral: Zug vorbei</div></div><div><div class="dc b">BANK</div><div class="dlabel">Fremd: Zug vorbei</div></div></div>`,
+  x:`<p>Wer rät, tippt die Karte direkt auf dem Spielfeld an. Sie dreht sich um und zeigt ihre Farbe. Die App zählt mit und wechselt das Team automatisch, wenn's daneben ging.</p><p>Will das Team freiwillig aufhören, tippt ihr auf <b>✋ Zug beenden</b>.</p>`,
+  tip:'Falsch getippt? «↶ Rückgängig» nimmt den letzten Schritt zurück, auch mehrmals hintereinander.'},
+ {t:'Der Timer',
+  v:()=>`<div class="tstate"><button class="t timerdemo" style="font-family:var(--head);font-size:22px;padding:4px 12px;border:2px solid var(--accent);background:transparent;border-radius:4px">▶ 1:00</button>Bereit, antippen zum Starten</div>
+         <div class="tstate"><button style="font-family:var(--head);font-size:22px;padding:4px 12px;border:2px solid var(--accent);background:var(--accent);color:#1a1510;border-radius:4px">0:42</button>Läuft</div>
+         <div class="tstate"><button style="font-family:var(--head);font-size:22px;padding:4px 12px;border:2px solid var(--red);background:var(--red);color:#fff;border-radius:4px;animation:blink 1s infinite">0:07</button>Letzte 10 Sekunden</div>
+         <div class="tstate"><button style="font-family:var(--head);font-size:22px;padding:4px 12px;border:2px solid var(--red);background:var(--red);color:#fff;border-radius:4px">0:00</button>Piep! Zeit ist um</div>`,
+  x:`<p>Ist der Timer eingeschaltet, steht er oben auf dem Spielfeld. <b>Antippen</b> startet oder pausiert ihn, <b>↺</b> setzt ihn zurück.</p><p>Wechselt das Team, springt er automatisch wieder auf die volle Zeit.</p>`,
+  tip:'Den Timer könnt ihr jederzeit über ⚙️ ein- oder ausschalten oder die Zeit ändern, ohne das Spiel zu verlieren.'},
+ {t:'Tablet-Modus',
+  v:()=>`<div class="stack"><div class="person flip">🧑‍🦱🧑</div><div class="bigcard"><span class="up">LEITER</span><span>LEITER</span></div><div class="person">👩🧔</div></div>`,
+  x:`<p>Liegt das Tablet in der Tischmitte, steht jedes Wort <b>zweimal</b> auf der Karte: einmal normal und einmal auf dem Kopf. So können beide Seiten lesen, ohne den Hals zu verrenken.</p>`,
+  tip:'Ihr könnt jederzeit über ⚙️ zwischen PC und Tablet wechseln. Das Spiel läuft einfach weiter.'},
+ {t:'Nur ein Gerät?',
+  v:()=>`<div class="stack"><div class="warnbox"><b>🕵️‍♀️ Nur für Hinweisgebende</b>Alle anderen schauen jetzt weg!</div><div class="screen small" style="width:300px">${mg({peek:true,rev:[0]})}</div></div>`,
+  x:`<p>Habt ihr keine Handys zur Hand, tippen die Hinweisgebenden auf <b>🕵️‍♀️ Schlüssel zeigen</b>. Nach einer Warnung bekommen alle Karten einen farbigen Rahmen.</p><p>Danach wieder <b>🙈 Schlüssel verbergen</b>. Solange der Schlüssel sichtbar ist, lässt sich keine Karte aufdecken.</p>`,
+  tip:'Die Glyphen ▲ ● – ☠ in der Ecke helfen, falls jemand Rot und Blau schlecht unterscheiden kann.'},
+ {t:'Hinweis-Karte: deine Ansicht',
+  v:()=>`${phone(`<div class="mseg"><span>👁 Alles</span><span class="on red">Ich bin Rot</span><span>Blau</span></div><div class="keyframe">${mg({key:true,dim:'r'})}</div>`)}
+         ${phone(`<div class="mseg"><span class="on">👁 Alles</span><span>Rot</span><span>Blau</span></div><div class="keyframe">${mg({key:true})}</div>`)}`,
+  x:`<p>Oben wählst du <b>Ich bin Rot</b> oder <b>Ich bin Blau</b>. Dann leuchten deine Wörter und der Rest wird ausgegraut. Mit <b>Alles</b> siehst du jederzeit wieder das ganze Feld.</p><p>Der farbige Rahmen und die Sonnenbrille zeigen, welches Team beginnt.</p>`,
+  tip:'Der Attentäter ☠ bleibt immer gut sichtbar, auch in deiner Teamansicht. Den willst du ja auf keinen Fall vergessen.'},
+ {t:'Abhaken, was schon geraten ist',
+  v:()=>phone(`<div class="mseg"><span class="on">✓ Abhaken</span><span>🧩 Kombi</span></div><div class="keyframe">${mg({key:true,dim:'r',mark:[0,3,9]})}</div>`),
+  x:`<p>Das Handy ist nicht mit dem Spielfeld verbunden. Wird auf dem Spielfeld eine Karte aufgedeckt, tippst du sie im Modus <b>✓ Abhaken</b> auf dem Handy an. Sie wird durchgestrichen.</p>`,
+  tip:'Nochmals antippen hebt das Abhaken wieder auf. Alles bleibt auf deinem Handy gespeichert, auch wenn du die App kurz schliesst.'},
+ {t:'Kombis planen',
+  v:()=>phone(`<div class="mseg"><span>✓ Abhaken</span><span class="on">🧩 Kombi</span></div><div class="keyframe">${mg({key:true,dim:'r',sel:[0,12,17]})}</div>
+         <div class="mpanel"><h4>Neue Kombi</h4><span class="mchip r">Wal</span><span class="mchip r">Fisch</span><span class="mchip r">Hai</span><div class="minput"><span>OZEAN</span><b>Speichern</b></div></div>`),
+  x:`<p>Im Modus <b>🧩 Kombi planen</b> tippst du mehrere eigene Wörter an, schreibst den Hinweis dazu und speicherst. So kannst du dir mehrere Runden im Voraus zurechtlegen.</p><p>Ist ein fremdes Wort oder der Attentäter in deiner Auswahl, warnt dich die App.</p>`,
+  tip:'Wörter, die schon in einer Kombi stecken, tragen auf der Karte ein kleines 🧩.'},
+ {t:'Den Überblick behalten',
+  v:()=>phone(`<div class="mpanel" style="margin-top:0"><h4>🧩 Meine Kombis</h4><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--head);font-size:9px">OZEAN 3</span><span style="font-size:7px;border:1px solid var(--line);padding:1px 3px;border-radius:2px">✓ gesagt</span></div><span class="mchip r x">Wal</span><span class="mchip r">Fisch</span><span class="mchip r">Hai</span></div>
+         <div class="mpanel"><h4>🎯 Noch ohne Kombi</h4><span class="mchip r">Leiter</span><span class="mchip r">Insel</span><span class="mchip r">Krone</span><span class="mchip r">Uhr</span><span class="mchip r">Strand</span></div>
+         <div class="mpanel"><h4>📝 Notizen</h4><div class="mnote">Bank nicht mit Geld verbinden, das ist blau!</div></div>`,'Schlüssel · weiter unten'),
+  x:`<p>Unter der Karte siehst du deine <b>Kombis</b>. Hast du einen Hinweis gesagt, markierst du ihn mit <b>✓ gesagt</b>.</p><p><b>Noch ohne Kombi</b> zeigt, welche eigenen Wörter noch keinen Plan haben. In den <b>Notizen</b> ist Platz für alles andere.</p>`,
+  tip:'Bereits abgehakte Wörter erscheinen in den Kombis durchgestrichen. So siehst du sofort, was von deinem Plan noch übrig ist.'},
+ {t:'Spielende',
+  v:()=>`<div class="endcard"><div class="av">${avatar(CFG.teams.red.avatar,cvar('red'))}</div><div class="stamp">Fall gelöst</div><h3>${esc(tname('red'))} gewinnt!</h3><div style="font-size:12px">Alle Agentinnen sind enttarnt.</div></div>`,
+  x:`<p>Sind alle Wörter eines Teams gefunden oder hat jemand den Attentäter erwischt, ist das Spiel vorbei. Mit <b>Feld ansehen</b> seht ihr danach alle Farben, mit <b>Neues Spiel</b> geht's zurück zum Einrichten.</p>`,
+  tip:'Ein laufendes Spiel bleibt gespeichert. Auf der Startseite könnt ihr es mit «Laufendes Spiel fortsetzen» wieder aufnehmen.'},
+];
+let tstep=0;
+function renderTour(){
+  const st=TOUR[tstep];
+  $('tvis').innerHTML=st.v(); $('tvis').classList.remove('anim'); void $('tvis').offsetWidth; $('tvis').classList.add('anim');
+  $('ttext').innerHTML=`<h2>${st.t}</h2>${st.x}<div class="tip"><b>💡 Tipp:</b> ${st.tip}</div>`;
+  $('tcount').textContent=`Schritt ${tstep+1} von ${TOUR.length}`;
+  $('tdots').innerHTML=TOUR.map((_,i)=>`<button class="${i===tstep?'on':''}" data-i="${i}" aria-label="Schritt ${i+1}"></button>`).join('');
+  $('tprev').disabled=tstep===0;
+  $('tnext').textContent=tstep===TOUR.length-1?'Fertig ✓':'Weiter →';
+}
+$('tprev').onclick=()=>{if(tstep>0){tstep--;renderTour()}};
+$('tnext').onclick=()=>{if(tstep<TOUR.length-1){tstep++;renderTour()}else show(helpReturn)};
+$('tdots').addEventListener('click',e=>{const b=e.target.closest('button');if(b){tstep=+b.dataset.i;renderTour()}});
+document.addEventListener('keydown',e=>{if(VIEW!=='help'||e.target.tagName==='INPUT')return;if(e.key==='ArrowRight')$('tnext').click();if(e.key==='ArrowLeft')$('tprev').click()});
+let tx=null;
+$('help').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+$('help').addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?$('tnext').click():$('tprev').click()}});
+
+/* ================= Modal & Toast ================= */
+let handlers={};
+function dialog(html,h={}){handlers=h;$('dialog').innerHTML=html;$('modal').classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden')}
+$('modal').addEventListener('click',e=>{
+  if(e.target.id==='modal'){closeModal();return}
+  const a=e.target.closest('[data-a]'); if(!a) return;
+  if(a.dataset.a==='close'){closeModal();return}
+  if(handlers[a.dataset.a]) handlers[a.dataset.a]();
+});
+let tt; function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* ================= Start ================= */
+T.left=CFG.timer;
+setMode(store.get('dn-mode',matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+const lv=store.get('dn-view','home');
+if(lv==='board'&&S&&S.base){G=makeGame(S.base,S.swaps);endShown=!!compute(G,S.events).over;show('board')}
+else if(lv==='spy') show('spy');
+else show('home');
+if(document.fonts) document.fonts.ready.then(fitAll);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
