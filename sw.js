@@ -1,6 +1,6 @@
 // Geheimakte Service Worker: macht die App offline-fähig.
 // Bei jeder neuen Version die Zahl hochzählen, damit alle Geräte das Update laden.
-const VERSION = 'geheimakte-v1';
+const VERSION = 'geheimakte-v2';
 const APP = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon.svg'];
 
 self.addEventListener('install', e => {

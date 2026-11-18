@@ -30,7 +30,7 @@ Fertig. Jede Änderung, die du auf GitHub hochlädst, geht automatisch online.
 ## Update veröffentlichen
 
 1. Neue `index.html` auf GitHub hochladen.
-2. In `sw.js` die Versionsnummer hochzählen (`geheimakte-v1` → `geheimakte-v2`). Sonst zeigen installierte Apps eventuell noch eine Weile die alte Version.
+2. In `sw.js` die Versionsnummer hochzählen (`geheimakte-v2` → `geheimakte-v3`). Sonst zeigen installierte Apps eventuell noch eine Weile die alte Version.
 
 ## Wichtig
 
